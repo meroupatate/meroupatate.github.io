@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="https://meroupatate.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://meroupatate.github.io/" rel="alternate" type="text/html" /><updated>2020-05-03T21:20:43+00:00</updated><id>https://meroupatate.github.io/feed.xml</id><title type="html">meroupatate</title><subtitle>Hi there, I am Alice and I am a French engineering student at Télécom SudParis.</subtitle><entry><title type="html">How to connect Airpods to Arch Linux with PulseAudio</title><link href="https://meroupatate.github.io/2020/05/03/airpods.html" rel="alternate" type="text/html" title="How to connect Airpods to Arch Linux with PulseAudio" /><published>2020-05-03T00:00:00+00:00</published><updated>2020-05-03T00:00:00+00:00</updated><id>https://meroupatate.github.io/2020/05/03/airpods</id><content type="html" xml:base="https://meroupatate.github.io/2020/05/03/airpods.html">&lt;p&gt;In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.&lt;/p&gt;
+
+&lt;p&gt;While I first thought that it would be quite laborious since Apple is not known for worrying about compatibility with platforms other than Apple devices, it turned out that connecting Airpods is not really different from connecting other bluetooth devices.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;In this tutorial, I will use &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;pulseaudio&lt;/code&gt;. If you do not have a sound multiplexer installed, I recommend going through the &lt;a href=&quot;https://wiki.archlinux.org/index.php/PulseAudio&quot;&gt;Arch Linux wiki page on installing and configuring PulseAudio&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You will also need to have the &lt;code class=&quot;highlighter-rouge&quot;&gt;bluez&lt;/code&gt; package installed, which should provide your computer with Bluetooth utilities.&lt;/p&gt;
+
+&lt;p&gt;Once you have BlueZ and PulseAudio installed and configured, you will need to install &lt;code class=&quot;highlighter-rouge&quot;&gt;pulseaudio-alsa&lt;/code&gt; which provides compability between ALSA and PulseAudio, &lt;code class=&quot;highlighter-rouge&quot;&gt;pulseaudio-bluetooth&lt;/code&gt; for bluetooth support with PulseAudio and finally &lt;code class=&quot;highlighter-rouge&quot;&gt;bluez-utils&lt;/code&gt; providing the &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt; CLI tool interact with the bluetooth service.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; pacman &lt;span class=&quot;nt&quot;&gt;-S&lt;/span&gt; pulseaudio-alsa pulseaudio-bluetooth bluez-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;pairing-and-connecting-your-airpods-with-bluetoothctl&quot;&gt;Pairing and connecting your Airpods with &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;First of all, you need to start the bluetooth systemd service and kill any existing PulseAudio instance.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; systemctl start bluetooth.service
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; pulseaudio &lt;span class=&quot;nt&quot;&gt;-k&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that the bluetooth service is running, you can run the &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt; command and enter its command prompt.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; bluetoothctl
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# power on
+Changing power on succeeded
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# agent on
+Agent registered
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# default-agent
+Default agent request successful
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# scan on
+Discovery started
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;At this point your bluetooth pairing agent should be in discovery mode. It means that your computer is ready to connect to your AirPods.&lt;/p&gt;
+
+&lt;p&gt;For your AirPods to be discovered by &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt;, you will need to put them into bluetooth pairing mode. With your AirPods in their charging case, open the lid of the charging case and keep the button on the back of the case pressed until the status light flashes white. The white light means that your AirPods are now in pairing mode, which means that if you look back to the &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl&lt;/code&gt; command prompt, there should be a new line with the MAC address and the name of your AirPods:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;NEW] Device B8:5D:0A:52:EF:86 AirPods
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that your AirPods have been discovered, you can pair them and connect them with your computer using their MAC address:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# pair B8:5D:0A:52:EF:86
+Attempting to pair with B8:5D:0A:52:EF:86
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;...&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+Pairing successful
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;bluetooth]# connect B8:5D:0A:52:EF:86
+Attempting to connect to B8:5D:0A:52:EF:86
+Connection successful
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Your AirPods should now be connected to your computer !&lt;/p&gt;
+
+&lt;p&gt;To automatically connect to your AirPods in the future, you can trust the device by running:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;AirPods]# trust B8:5D:0A:52:EF:86
+Changing B8:5D:0A:52:EF:86 trust succeeded
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can also change the name of your AirPods by using the &lt;code class=&quot;highlighter-rouge&quot;&gt;bluetoothctl set-alias&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;AirPods]# set-alias &lt;span class=&quot;s2&quot;&gt;&quot;AirPods de Jean Michel&quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;CHG] Device B8:5D:0A:52:EF:86 Alias: AirPods de Jean Michel
+Changing AirPods de Jean Michel succeeded
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now if you open the PulseAudio sound control panel &lt;code class=&quot;highlighter-rouge&quot;&gt;pavucontrol&lt;/code&gt; you should see your AirPods in the “Output devices” tab below your default internal audio device.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;images/airpods01.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If the Airpods don’t show in the control panel, the issue might be that you haven’t installed the &lt;code class=&quot;highlighter-rouge&quot;&gt;pulseaudio-bluetooth&lt;/code&gt; module.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Now you should have your AirPods working ! As you can see, connecting your AirPods to a Linux device does not require any specific configuration other than standard bluetooth connection tools.&lt;/p&gt;
+
+&lt;p&gt;I hope that this short tutorial can be useful for those of you with AirPods who didn’t know how to connect them with your Arch Linux machine.&lt;/p&gt;
+
+&lt;p&gt;If you need any specific troubleshooting solutions, I highly recommand you going to the Arch Linux wiki, especially to the &lt;a href=&quot;https://wiki.archlinux.org/index.php/Bluetooth_headset&quot;&gt;Bluetooth headset page&lt;/a&gt;, which is quite complete and from which I learned a lot of what I mentioned in this article.&lt;/p&gt;</content><author><name></name></author><category term="airpods" /><category term="arch" /><category term="linux" /><category term="bluetooth" /><category term="pulseaudio" /><summary type="html">In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.</summary></entry><entry><title type="html">A possible reason for your Virtualbox VM entering the “gurumeditation” state</title><link href="https://meroupatate.github.io/2020/05/02/gurumeditation.html" rel="alternate" type="text/html" title="A possible reason for your Virtualbox VM entering the &quot;gurumeditation&quot; state" /><published>2020-05-02T00:00:00+00:00</published><updated>2020-05-02T00:00:00+00:00</updated><id>https://meroupatate.github.io/2020/05/02/gurumeditation</id><content type="html" xml:base="https://meroupatate.github.io/2020/05/02/gurumeditation.html">&lt;p&gt;If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you.&lt;/p&gt;
+
+&lt;p&gt;I ran into this unexpected error while trying to run &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant up&lt;/code&gt; the other day:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The guest machine entered an invalid state while waiting for it
+to boot. Valid states are ‘starting, running’. The machine is in the
+‘gurumeditation’ state. Please verify everything is configured
+properly and try again.&lt;/p&gt;
+
+  &lt;p&gt;If the provider you’re using has a GUI that comes with it,
+it is often helpful to open that and watch the machine, since the
+GUI often has more helpful error messages than Vagrant can retrieve.
+For example, if you’re using VirtualBox, run &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant up&lt;/code&gt; while the
+VirtualBox GUI is open.&lt;/p&gt;
+
+  &lt;p&gt;The primary issue for this error is that the provider you’re using
+is not properly configured. This is very rarely a Vagrant issue.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;While my first thought was that I actually messed up something with my Virtualbox configuration as suggested in this log, I quickly ran out of ideas once I had gone thought multiple forums that made me reinstall Virtualbox time after time in different versions without success…&lt;/p&gt;
+
+&lt;p&gt;I then proceeded to look into the Virtualbox logs but I found nothing that really helped me to understand what the issue was.&lt;/p&gt;
+
+&lt;p&gt;Finally, I found what I was looking for in this &lt;a href=&quot;https://github.com/kubernetes/minikube/issues/4913#issuecomment-543560593&quot;&gt;Github issue about minikube&lt;/a&gt; !&lt;/p&gt;
+
+&lt;p&gt;In fact, it turns out that the problem was that I had another VM existing on my system that was using KVM. It seems that there is some sort of conflict between Virtualbox and KVM that prevents Virtualbox VM to boot if a KVM machine is running.&lt;/p&gt;
+
+&lt;p&gt;If you actually need to keep your KVM machine running, you may want to look into other providers for your Vagrant VM such as using Libvirt instead of Virtualbox.&lt;/p&gt;
+
+&lt;p&gt;In my case my other VM was started by Minikube using the KVM driver. And since I didn’t need it anymore, I simply deleted it by running &lt;code class=&quot;highlighter-rouge&quot;&gt;minikube delete&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Then I aborted the gurumeditating VM by running &lt;code class=&quot;highlighter-rouge&quot;&gt;killall -9 VBoxHeadless &amp;amp;&amp;amp; vagrant destroy&lt;/code&gt;, which shouldn’t cause too much trouble since there shouldn’t be other Virtualbox VM.&lt;/p&gt;
+
+&lt;p&gt;After that, running &lt;code class=&quot;highlighter-rouge&quot;&gt;vagrant up&lt;/code&gt; successfully created and configured the VM I wanted to start.&lt;/p&gt;</content><author><name></name></author><category term="virtualbox" /><category term="gurumeditation" /><summary type="html">If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you.</summary></entry></feed>
