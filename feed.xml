@@ -1,4 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="https://meroupatate.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://meroupatate.github.io/" rel="alternate" type="text/html" /><updated>2021-01-03T23:59:38+00:00</updated><id>https://meroupatate.github.io/feed.xml</id><title type="html">meroupatate</title><subtitle>Hi there, I am Alice and I am a French engineering student at Télécom SudParis.</subtitle><entry><title type="html">How to connect Airpods to Arch Linux with PulseAudio</title><link href="https://meroupatate.github.io/2020/05/03/airpods.html" rel="alternate" type="text/html" title="How to connect Airpods to Arch Linux with PulseAudio" /><published>2020-05-03T00:00:00+00:00</published><updated>2020-05-03T00:00:00+00:00</updated><id>https://meroupatate.github.io/2020/05/03/airpods</id><content type="html" xml:base="https://meroupatate.github.io/2020/05/03/airpods.html">&lt;p&gt;In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="https://meroupatate.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://meroupatate.github.io/" rel="alternate" type="text/html" /><updated>2021-01-04T00:05:29+00:00</updated><id>https://meroupatate.github.io/feed.xml</id><title type="html">meroupatate</title><subtitle>Hi there, I am Alice and I am a French engineering student at Télécom SudParis.</subtitle><entry><title type="html">How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation ?</title><link href="https://meroupatate.github.io/2021/01/04/bootloader.html" rel="alternate" type="text/html" title="How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation ?" /><published>2021-01-04T00:00:00+00:00</published><updated>2021-01-04T00:00:00+00:00</updated><id>https://meroupatate.github.io/2021/01/04/bootloader</id><content type="html" xml:base="https://meroupatate.github.io/2021/01/04/bootloader.html">&lt;p&gt;During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using &lt;code class=&quot;highlighter-rouge&quot;&gt;systemd-boot&lt;/code&gt;.
+While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files.&lt;/p&gt;
+
+&lt;p&gt;In this article, I will describe how I managed to reinstall Windows Boot Manager on my EFI system and create a Windows 10 entry in systemd-boot.&lt;/p&gt;
+
+&lt;h2 id=&quot;current-partitions&quot;&gt;Current partitions&lt;/h2&gt;
+
+&lt;p&gt;Here is the list of my partitions after my Arch installation:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;fdisk &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt;
+Device          Start        End    Sectors   Size Type
+/dev/sda1        2048     534527     532480   260M EFI System
+/dev/sda2      534528     567295      32768    16M Microsoft reserved
+/dev/sda3      567296  926358296  925791001 441.5G Microsoft basic data
+/dev/sda4   926359552  927473663    1114112   544M Windows recovery environment
+/dev/sda5   927475712 1951475711 1024000000 488.3G Linux filesystem
+/dev/sda6  1951475712 1953523711    2048000  1000M Windows recovery environment
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As you can see, my Linux filesystem is &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda5&lt;/code&gt; and my Windows filesystem is &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda3&lt;/code&gt;. The other partitions are managed by the Windows installation: &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda2&lt;/code&gt; is a &lt;a href=&quot;https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#microsoft-reserved-partition-msr&quot;&gt;Microsoft reserved partition&lt;/a&gt; and both &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda4&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda6&lt;/code&gt; are recovery partitions (&lt;a href=&quot;https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#recovery-tools-partition&quot;&gt;Windows RE&lt;/a&gt;) automatically created by Windows 10.&lt;/p&gt;
+
+&lt;p&gt;Here, the interesting partition is &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sda1&lt;/code&gt;, which is the EFI system mounted as &lt;code class=&quot;highlighter-rouge&quot;&gt;/boot&lt;/code&gt; for my Linux installation. As I mentioned before, this partition was initially a &lt;a href=&quot;https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#system-partition&quot;&gt;System partition&lt;/a&gt; managed by Windows, but since I formatted the partition during my Linux installation, I now need to restore my Windows Boot Manager files on the partition in order to be able to boot both Windows 10 and Linux.&lt;/p&gt;
+
+&lt;h2 id=&quot;restoring-the-windows-boot-manager-files&quot;&gt;Restoring the Windows Boot Manager files&lt;/h2&gt;
+
+&lt;p&gt;The first step is to create a bootable USB drive for Windows 10. The Windows 10 ISO can be downloaded from the &lt;a href=&quot;https://www.microsoft.com/en-us/software-download/windows10ISO&quot;&gt;Microsoft website&lt;/a&gt;. Since the image uses around 6GB disk space, I got a 16GB USB drive to make sure I have enough disk space for the ISO image. It is important that this USB drive contains no useful data since the filesystem will be completely overwritten by the Windows ISO image.&lt;/p&gt;
+
+&lt;p&gt;As shown in the following command output, my USB drive is detected as the new device &lt;code class=&quot;highlighter-rouge&quot;&gt;/dev/sdb&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;lsblk
+NAME           MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
+sda              8:0    0 931.5G  0 disk
+├─sda1           8:1    0   260M  0 part  /boot
+├─sda2           8:2    0    16M  0 part
+├─sda3           8:3    0 441.5G  0 part
+├─sda4           8:4    0   544M  0 part
+├─sda5           8:5    0 488.3G  0 part
+│ └─LVM        254:0    0 488.3G  0 crypt
+│   ├─mvg-swap 254:1    0    20G  0 lvm   &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;SWAP]
+│   ├─mvg-root 254:2    0    40G  0 lvm   /
+│   └─mvg-home 254:3    0 428.3G  0 lvm   /home
+└─sda6           8:6    0  1000M  0 part
+sdb              8:16   1  14.8G  0 disk
+└─sdb1           8:17   1  14.8G  0 part
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;To override all data within the USB drive with the Windows 10 ISO, I installed &lt;code class=&quot;highlighter-rouge&quot;&gt;woeusb&lt;/code&gt; from AUR. &lt;code class=&quot;highlighter-rouge&quot;&gt;woeusb&lt;/code&gt; is a tool to create a bootable Windows USB drive since &lt;a href=&quot;https://wiki.archlinux.org/index.php/USB_flash_installation_medium#BIOS_and_UEFI_bootable_USB&quot;&gt;standard ways of copying ISO to a USB drive&lt;/a&gt; do not work with Windows images.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;woeusb &lt;span class=&quot;nt&quot;&gt;--target-filesystem&lt;/span&gt; NTFS &lt;span class=&quot;nt&quot;&gt;--device&lt;/span&gt; Win10_20H2_v2_French_x64.iso /dev/sdb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Once the command has finished its execution, I rebooted from the newly created Windows installation drive (by changing the UEFI boot order in BIOS) and landed in the Windows installation screen.&lt;/p&gt;
+
+&lt;p&gt;I then found a thread where Mark S. described how to create a lost EFI partition from an installation media. Since I already had an existing EFI system partition, I skipped the steps used to create and format the partition and only run the following steps:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Press &lt;code class=&quot;highlighter-rouge&quot;&gt;SHIFT+F10&lt;/code&gt; on the Windows installation screen to open a command-line interpreter.&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;diskpart&lt;/code&gt; to launch the disk management tool DiskPart.&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;list disk&lt;/code&gt; in DiskPart to get a list of existing disks.&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;select disk N&lt;/code&gt; where &lt;code class=&quot;highlighter-rouge&quot;&gt;N&lt;/code&gt; refers to the number of the disk which contains our EFI system partition (for me it was Disk 0 so I ran &lt;code class=&quot;highlighter-rouge&quot;&gt;select disk 0&lt;/code&gt;).
+&lt;img src=&quot;/assets/bootloader-01.jpg&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;list volume&lt;/code&gt; to get the list of the partitions in this disk.
+&lt;img src=&quot;/assets/bootloader-02.jpg&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;Find the letter corresponding to the volume with the existing Windows filesystem (in my case it is &lt;code class=&quot;highlighter-rouge&quot;&gt;C&lt;/code&gt; since &lt;code class=&quot;highlighter-rouge&quot;&gt;Volume 0&lt;/code&gt; is listed as my Windows filesystem).&lt;/li&gt;
+  &lt;li&gt;Exit DiskPart by running &lt;code class=&quot;highlighter-rouge&quot;&gt;exit&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Run &lt;code class=&quot;highlighter-rouge&quot;&gt;bcdboot X:\Windows&lt;/code&gt; where &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt; is the letter found in the previous step. This command should copy the boot files from the Windows partition to our existing EFI system partition so that an entry will be created by &lt;code class=&quot;highlighter-rouge&quot;&gt;systemd-boot&lt;/code&gt;.
+&lt;img src=&quot;/assets/bootloader-03.jpg&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I then restarted and went back to the BIOS to change the default boot device back to &lt;code class=&quot;highlighter-rouge&quot;&gt;Linux Boot Loader&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/bootloader-04.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;An new entry called &lt;code class=&quot;highlighter-rouge&quot;&gt;Windows Boot Manager&lt;/code&gt; has been created right below my &lt;code class=&quot;highlighter-rouge&quot;&gt;Arch Linux&lt;/code&gt; entry and I now have an operational dual boot ! :D&lt;/p&gt;</content><author><name></name></author><category term="windows" /><category term="arch" /><category term="linux" /><category term="dual-boot" /><category term="bootloader" /><category term="systemd-boot" /><summary type="html">During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using systemd-boot. While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files.</summary></entry><entry><title type="html">How to connect Airpods to Arch Linux with PulseAudio</title><link href="https://meroupatate.github.io/2020/05/03/airpods.html" rel="alternate" type="text/html" title="How to connect Airpods to Arch Linux with PulseAudio" /><published>2020-05-03T00:00:00+00:00</published><updated>2020-05-03T00:00:00+00:00</updated><id>https://meroupatate.github.io/2020/05/03/airpods</id><content type="html" xml:base="https://meroupatate.github.io/2020/05/03/airpods.html">&lt;p&gt;In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.&lt;/p&gt;
 
 &lt;p&gt;While I first thought that it would be quite laborious since Apple is not known for worrying about compatibility with platforms other than Apple devices, it turned out that connecting Airpods is not really different from connecting other bluetooth devices.&lt;/p&gt;
 
