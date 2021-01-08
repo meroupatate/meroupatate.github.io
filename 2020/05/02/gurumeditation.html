@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>A possible reason for your Virtualbox VM entering the “gurumeditation” state | meroupatate</title>
-<meta name="generator" content="Jekyll v3.8.6" />
+<meta name="generator" content="Jekyll v3.9.0" />
 <meta property="og:title" content="A possible reason for your Virtualbox VM entering the “gurumeditation” state" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you." />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="meroupatate" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-02T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A possible reason for your Virtualbox VM entering the “gurumeditation” state" />
 <script type="application/ld+json">
-{"datePublished":"2020-05-02T00:00:00+00:00","dateModified":"2020-05-02T00:00:00+00:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2020/05/02/gurumeditation.html"},"url":"https://meroupatate.github.io/2020/05/02/gurumeditation.html","headline":"A possible reason for your Virtualbox VM entering the “gurumeditation” state","description":"If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you.","@context":"https://schema.org"}</script>
+{"description":"If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you.","@type":"BlogPosting","headline":"A possible reason for your Virtualbox VM entering the “gurumeditation” state","dateModified":"2020-05-02T00:00:00+00:00","datePublished":"2020-05-02T00:00:00+00:00","url":"https://meroupatate.github.io/2020/05/02/gurumeditation.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2020/05/02/gurumeditation.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="https://meroupatate.github.io/feed.xml" title="meroupatate" /></head>
@@ -29,10 +31,12 @@
 </div>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="author-box">
+        
+  <div class="author-box">
 
 Hi there, I am Alice and I am a French engineering student at Télécom SudParis.
 </div>
+
 
 <div class="post">
   <h1 class="post-title">A possible reason for your Virtualbox VM entering the "gurumeditation" state</h1>
@@ -49,7 +53,7 @@ Hi there, I am Alice and I am a French engineering student at Télécom SudParis
   
   <p>If you are trying to deploy a Virtualbox virtual machine with Vagrant but your VM entered the “gurumeditation” state, then maybe this article can help you.</p>
 
-<p>I ran into this unexpected error while trying to run <code class="highlighter-rouge">vagrant up</code> the other day:</p>
+<p>I ran into this unexpected error while trying to run <code class="language-plaintext highlighter-rouge">vagrant up</code> the other day:</p>
 
 <blockquote>
   <p>The guest machine entered an invalid state while waiting for it
@@ -60,7 +64,7 @@ properly and try again.</p>
   <p>If the provider you’re using has a GUI that comes with it,
 it is often helpful to open that and watch the machine, since the
 GUI often has more helpful error messages than Vagrant can retrieve.
-For example, if you’re using VirtualBox, run <code class="highlighter-rouge">vagrant up</code> while the
+For example, if you’re using VirtualBox, run <code class="language-plaintext highlighter-rouge">vagrant up</code> while the
 VirtualBox GUI is open.</p>
 
   <p>The primary issue for this error is that the provider you’re using
@@ -77,11 +81,11 @@ is not properly configured. This is very rarely a Vagrant issue.</p>
 
 <p>If you actually need to keep your KVM machine running, you may want to look into other providers for your Vagrant VM such as using Libvirt instead of Virtualbox.</p>
 
-<p>In my case my other VM was started by Minikube using the KVM driver. And since I didn’t need it anymore, I simply deleted it by running <code class="highlighter-rouge">minikube delete</code>.</p>
+<p>In my case my other VM was started by Minikube using the KVM driver. And since I didn’t need it anymore, I simply deleted it by running <code class="language-plaintext highlighter-rouge">minikube delete</code>.</p>
 
-<p>Then I aborted the gurumeditating VM by running <code class="highlighter-rouge">killall -9 VBoxHeadless &amp;&amp; vagrant destroy</code>, which shouldn’t cause too much trouble since there shouldn’t be other Virtualbox VM.</p>
+<p>Then I aborted the gurumeditating VM by running <code class="language-plaintext highlighter-rouge">killall -9 VBoxHeadless &amp;&amp; vagrant destroy</code>, which shouldn’t cause too much trouble since there shouldn’t be other Virtualbox VM.</p>
 
-<p>After that, running <code class="highlighter-rouge">vagrant up</code> successfully created and configured the VM I wanted to start.</p>
+<p>After that, running <code class="language-plaintext highlighter-rouge">vagrant up</code> successfully created and configured the VM I wanted to start.</p>
 
 </div>
 

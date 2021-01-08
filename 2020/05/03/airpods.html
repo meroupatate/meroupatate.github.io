@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>How to connect Airpods to Arch Linux with PulseAudio | meroupatate</title>
-<meta name="generator" content="Jekyll v3.8.6" />
+<meta name="generator" content="Jekyll v3.9.0" />
 <meta property="og:title" content="How to connect Airpods to Arch Linux with PulseAudio" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio." />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="meroupatate" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-05-03T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How to connect Airpods to Arch Linux with PulseAudio" />
 <script type="application/ld+json">
-{"datePublished":"2020-05-03T00:00:00+00:00","dateModified":"2020-05-03T00:00:00+00:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2020/05/03/airpods.html"},"url":"https://meroupatate.github.io/2020/05/03/airpods.html","headline":"How to connect Airpods to Arch Linux with PulseAudio","description":"In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.","@context":"https://schema.org"}</script>
+{"description":"In this article, I will document how I connected my AirPods to my computer running Arch Linux with PulseAudio.","@type":"BlogPosting","headline":"How to connect Airpods to Arch Linux with PulseAudio","dateModified":"2020-05-03T00:00:00+00:00","datePublished":"2020-05-03T00:00:00+00:00","url":"https://meroupatate.github.io/2020/05/03/airpods.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2020/05/03/airpods.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="https://meroupatate.github.io/feed.xml" title="meroupatate" /></head>
@@ -29,10 +31,12 @@
 </div>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="author-box">
+        
+  <div class="author-box">
 
 Hi there, I am Alice and I am a French engineering student at Télécom SudParis.
 </div>
+
 
 <div class="post">
   <h1 class="post-title">How to connect Airpods to Arch Linux with PulseAudio</h1>
@@ -58,21 +62,21 @@ Hi there, I am Alice and I am a French engineering student at Télécom SudParis
 <p>While I first thought that it would be quite laborious since Apple is not known for worrying about compatibility with platforms other than Apple devices, it turned out that connecting Airpods is not really different from connecting other bluetooth devices.</p>
 
 <h2 id="prerequisites">Prerequisites</h2>
-<p>In this tutorial, I will use <code class="highlighter-rouge">bluetoothctl</code> and <code class="highlighter-rouge">pulseaudio</code>. If you do not have a sound multiplexer installed, I recommend going through the <a href="https://wiki.archlinux.org/index.php/PulseAudio">Arch Linux wiki page on installing and configuring PulseAudio</a>.</p>
+<p>In this tutorial, I will use <code class="language-plaintext highlighter-rouge">bluetoothctl</code> and <code class="language-plaintext highlighter-rouge">pulseaudio</code>. If you do not have a sound multiplexer installed, I recommend going through the <a href="https://wiki.archlinux.org/index.php/PulseAudio">Arch Linux wiki page on installing and configuring PulseAudio</a>.</p>
 
-<p>You will also need to have the <code class="highlighter-rouge">bluez</code> package installed, which should provide your computer with Bluetooth utilities.</p>
+<p>You will also need to have the <code class="language-plaintext highlighter-rouge">bluez</code> package installed, which should provide your computer with Bluetooth utilities.</p>
 
-<p>Once you have BlueZ and PulseAudio installed and configured, you will need to install <code class="highlighter-rouge">pulseaudio-alsa</code> which provides compability between ALSA and PulseAudio, <code class="highlighter-rouge">pulseaudio-bluetooth</code> for bluetooth support with PulseAudio and finally <code class="highlighter-rouge">bluez-utils</code> providing the <code class="highlighter-rouge">bluetoothctl</code> CLI tool interact with the bluetooth service.</p>
+<p>Once you have BlueZ and PulseAudio installed and configured, you will need to install <code class="language-plaintext highlighter-rouge">pulseaudio-alsa</code> which provides compability between ALSA and PulseAudio, <code class="language-plaintext highlighter-rouge">pulseaudio-bluetooth</code> for bluetooth support with PulseAudio and finally <code class="language-plaintext highlighter-rouge">bluez-utils</code> providing the <code class="language-plaintext highlighter-rouge">bluetoothctl</code> CLI tool interact with the bluetooth service.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> pacman <span class="nt">-S</span> pulseaudio-alsa pulseaudio-bluetooth bluez-utils
 </code></pre></div></div>
 
-<h2 id="pairing-and-connecting-your-airpods-with-bluetoothctl">Pairing and connecting your Airpods with <code class="highlighter-rouge">bluetoothctl</code></h2>
+<h2 id="pairing-and-connecting-your-airpods-with-bluetoothctl">Pairing and connecting your Airpods with <code class="language-plaintext highlighter-rouge">bluetoothctl</code></h2>
 <p>First of all, you need to start the bluetooth systemd service and kill any existing PulseAudio instance.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> systemctl start bluetooth.service
 <span class="o">&gt;</span> pulseaudio <span class="nt">-k</span>
 </code></pre></div></div>
 
-<p>Now that the bluetooth service is running, you can run the <code class="highlighter-rouge">bluetoothctl</code> command and enter its command prompt.</p>
+<p>Now that the bluetooth service is running, you can run the <code class="language-plaintext highlighter-rouge">bluetoothctl</code> command and enter its command prompt.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> bluetoothctl
 <span class="o">[</span>bluetooth]# power on
@@ -87,7 +91,7 @@ Discovery started
 
 <p>At this point your bluetooth pairing agent should be in discovery mode. It means that your computer is ready to connect to your AirPods.</p>
 
-<p>For your AirPods to be discovered by <code class="highlighter-rouge">bluetoothctl</code>, you will need to put them into bluetooth pairing mode. With your AirPods in their charging case, open the lid of the charging case and keep the button on the back of the case pressed until the status light flashes white. The white light means that your AirPods are now in pairing mode, which means that if you look back to the <code class="highlighter-rouge">bluetoothctl</code> command prompt, there should be a new line with the MAC address and the name of your AirPods:</p>
+<p>For your AirPods to be discovered by <code class="language-plaintext highlighter-rouge">bluetoothctl</code>, you will need to put them into bluetooth pairing mode. With your AirPods in their charging case, open the lid of the charging case and keep the button on the back of the case pressed until the status light flashes white. The white light means that your AirPods are now in pairing mode, which means that if you look back to the <code class="language-plaintext highlighter-rouge">bluetoothctl</code> command prompt, there should be a new line with the MAC address and the name of your AirPods:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>NEW] Device B8:5D:0A:52:EF:86 AirPods
 </code></pre></div></div>
@@ -110,18 +114,18 @@ Connection successful
 Changing B8:5D:0A:52:EF:86 trust succeeded
 </code></pre></div></div>
 
-<p>You can also change the name of your AirPods by using the <code class="highlighter-rouge">bluetoothctl set-alias</code> command:</p>
+<p>You can also change the name of your AirPods by using the <code class="language-plaintext highlighter-rouge">bluetoothctl set-alias</code> command:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>AirPods]# set-alias <span class="s2">"AirPods de Jean Michel"</span>
 <span class="o">[</span>CHG] Device B8:5D:0A:52:EF:86 Alias: AirPods de Jean Michel
 Changing AirPods de Jean Michel succeeded
 </code></pre></div></div>
 
-<p>Now if you open the PulseAudio sound control panel <code class="highlighter-rouge">pavucontrol</code> you should see your AirPods in the “Output devices” tab below your default internal audio device.</p>
+<p>Now if you open the PulseAudio sound control panel <code class="language-plaintext highlighter-rouge">pavucontrol</code> you should see your AirPods in the “Output devices” tab below your default internal audio device.</p>
 
 <p><img src="/assets/airpods-01.png" alt="" /></p>
 
-<p>If the Airpods don’t show in the control panel, the issue might be that you haven’t installed the <code class="highlighter-rouge">pulseaudio-bluetooth</code> module.</p>
+<p>If the Airpods don’t show in the control panel, the issue might be that you haven’t installed the <code class="language-plaintext highlighter-rouge">pulseaudio-bluetooth</code> module.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 

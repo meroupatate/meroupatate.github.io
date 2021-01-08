@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation | meroupatate</title>
-<meta name="generator" content="Jekyll v3.8.6" />
+<meta name="generator" content="Jekyll v3.9.0" />
 <meta property="og:title" content="How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using systemd-boot. While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files." />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="meroupatate" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2021-01-04T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation" />
 <script type="application/ld+json">
-{"datePublished":"2021-01-04T00:00:00+00:00","dateModified":"2021-01-04T00:00:00+00:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2021/01/04/bootloader.html"},"url":"https://meroupatate.github.io/2021/01/04/bootloader.html","headline":"How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation","description":"During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using systemd-boot. While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files.","@context":"https://schema.org"}</script>
+{"description":"During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using systemd-boot. While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files.","@type":"BlogPosting","headline":"How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation","dateModified":"2021-01-04T00:00:00+00:00","datePublished":"2021-01-04T00:00:00+00:00","url":"https://meroupatate.github.io/2021/01/04/bootloader.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://meroupatate.github.io/2021/01/04/bootloader.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="icon" type="image/png" href="/assets/favicon.png" /><link type="application/atom+xml" rel="alternate" href="https://meroupatate.github.io/feed.xml" title="meroupatate" /></head>
@@ -29,10 +31,12 @@
 </div>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="author-box">
+        
+  <div class="author-box">
 
 Hi there, I am Alice and I am a French engineering student at Télécom SudParis.
 </div>
+
 
 <div class="post">
   <h1 class="post-title">How to restore an accidentally deleted Windows Boot Manager with a Windows / Arch Linux dual-boot installation</h1>
@@ -55,7 +59,7 @@ Hi there, I am Alice and I am a French engineering student at Télécom SudParis
   
   <div class="post-date">Published on 04 Jan 2021</div>
   
-  <p>During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using <code class="highlighter-rouge">systemd-boot</code>.
+  <p>During my Arch Linux installation, I accidentally formatted the EFI system partition created by my existing Windows installation and replaced it with a new EFI system that starts Arch Linux using <code class="language-plaintext highlighter-rouge">systemd-boot</code>.
 While my initial goal was to have a Windows 10 / Arch Linux dual boot, I am currently only able to boot under Arch since I deleted my Windows Boot Manager files.</p>
 
 <p>In this article, I will describe how I managed to reinstall Windows Boot Manager on my EFI system and create a Windows 10 entry in systemd-boot.</p>
@@ -73,15 +77,15 @@ Device          Start        End    Sectors   Size Type
 /dev/sda6  1951475712 1953523711    2048000  1000M Windows recovery environment
 </code></pre></div></div>
 
-<p>As you can see, my Linux filesystem is <code class="highlighter-rouge">/dev/sda5</code> and my Windows filesystem is <code class="highlighter-rouge">/dev/sda3</code>. The other partitions are managed by the Windows installation: <code class="highlighter-rouge">/dev/sda2</code> is a <a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#microsoft-reserved-partition-msr">Microsoft reserved partition</a> and both <code class="highlighter-rouge">/dev/sda4</code> and <code class="highlighter-rouge">/dev/sda6</code> are recovery partitions (<a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#recovery-tools-partition">Windows RE</a>) automatically created by Windows 10.</p>
+<p>As you can see, my Linux filesystem is <code class="language-plaintext highlighter-rouge">/dev/sda5</code> and my Windows filesystem is <code class="language-plaintext highlighter-rouge">/dev/sda3</code>. The other partitions are managed by the Windows installation: <code class="language-plaintext highlighter-rouge">/dev/sda2</code> is a <a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#microsoft-reserved-partition-msr">Microsoft reserved partition</a> and both <code class="language-plaintext highlighter-rouge">/dev/sda4</code> and <code class="language-plaintext highlighter-rouge">/dev/sda6</code> are recovery partitions (<a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#recovery-tools-partition">Windows RE</a>) automatically created by Windows 10.</p>
 
-<p>Here, the interesting partition is <code class="highlighter-rouge">/dev/sda1</code>, which is the EFI system mounted as <code class="highlighter-rouge">/boot</code> for my Linux installation. As I mentioned before, this partition was initially a <a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#system-partition">System partition</a> managed by Windows, but since I formatted the partition during my Linux installation, I now need to restore my Windows Boot Manager files on the partition in order to be able to boot both Windows 10 and Linux.</p>
+<p>Here, the interesting partition is <code class="language-plaintext highlighter-rouge">/dev/sda1</code>, which is the EFI system mounted as <code class="language-plaintext highlighter-rouge">/boot</code> for my Linux installation. As I mentioned before, this partition was initially a <a href="https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/configure-uefigpt-based-hard-drive-partitions#system-partition">System partition</a> managed by Windows, but since I formatted the partition during my Linux installation, I now need to restore my Windows Boot Manager files on the partition in order to be able to boot both Windows 10 and Linux.</p>
 
 <h2 id="restoring-the-windows-boot-manager-files">Restoring the Windows Boot Manager files</h2>
 
 <p>The first step is to create a bootable USB drive for Windows 10. The Windows 10 ISO can be downloaded from the <a href="https://www.microsoft.com/en-us/software-download/windows10ISO">Microsoft website</a>. Since the image uses around 6GB disk space, I got a 16GB USB drive to make sure I have enough disk space for the ISO image. It is important that this USB drive contains no useful data since the filesystem will be completely overwritten by the Windows ISO image.</p>
 
-<p>As shown in the following command output, my USB drive is detected as the new device <code class="highlighter-rouge">/dev/sdb</code>:</p>
+<p>As shown in the following command output, my USB drive is detected as the new device <code class="language-plaintext highlighter-rouge">/dev/sdb</code>:</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>lsblk
 NAME           MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
 sda              8:0    0 931.5G  0 disk
@@ -99,7 +103,7 @@ sdb              8:16   1  14.8G  0 disk
 └─sdb1           8:17   1  14.8G  0 part
 </code></pre></div></div>
 
-<p>To override all data within the USB drive with the Windows 10 ISO, I installed <code class="highlighter-rouge">woeusb</code> from AUR. <code class="highlighter-rouge">woeusb</code> is a tool to create a bootable Windows USB drive since <a href="https://wiki.archlinux.org/index.php/USB_flash_installation_medium#BIOS_and_UEFI_bootable_USB">standard ways of copying ISO to a USB drive</a> do not work with Windows images.</p>
+<p>To override all data within the USB drive with the Windows 10 ISO, I installed <code class="language-plaintext highlighter-rouge">woeusb</code> from AUR. <code class="language-plaintext highlighter-rouge">woeusb</code> is a tool to create a bootable Windows USB drive since <a href="https://wiki.archlinux.org/index.php/USB_flash_installation_medium#BIOS_and_UEFI_bootable_USB">standard ways of copying ISO to a USB drive</a> do not work with Windows images.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>woeusb <span class="nt">--target-filesystem</span> NTFS <span class="nt">--device</span> Win10_20H2_v2_French_x64.iso /dev/sdb
 </code></pre></div></div>
@@ -108,24 +112,24 @@ sdb              8:16   1  14.8G  0 disk
 
 <p>I then found a thread where Mark S. described how to create a lost EFI partition from an installation media. Since I already had an existing EFI system partition, I skipped the steps used to create and format the partition and only run the following steps:</p>
 <ul>
-  <li>Press <code class="highlighter-rouge">SHIFT+F10</code> on the Windows installation screen to open a command-line interpreter.</li>
-  <li>Run <code class="highlighter-rouge">diskpart</code> to launch the disk management tool DiskPart.</li>
-  <li>Run <code class="highlighter-rouge">list disk</code> in DiskPart to get a list of existing disks.</li>
-  <li>Run <code class="highlighter-rouge">select disk N</code> where <code class="highlighter-rouge">N</code> refers to the number of the disk which contains our EFI system partition (for me it was Disk 0 so I ran <code class="highlighter-rouge">select disk 0</code>).
+  <li>Press <code class="language-plaintext highlighter-rouge">SHIFT+F10</code> on the Windows installation screen to open a command-line interpreter.</li>
+  <li>Run <code class="language-plaintext highlighter-rouge">diskpart</code> to launch the disk management tool DiskPart.</li>
+  <li>Run <code class="language-plaintext highlighter-rouge">list disk</code> in DiskPart to get a list of existing disks.</li>
+  <li>Run <code class="language-plaintext highlighter-rouge">select disk N</code> where <code class="language-plaintext highlighter-rouge">N</code> refers to the number of the disk which contains our EFI system partition (for me it was Disk 0 so I ran <code class="language-plaintext highlighter-rouge">select disk 0</code>).
 <img src="/assets/bootloader-01.jpg" alt="" /></li>
-  <li>Run <code class="highlighter-rouge">list volume</code> to get the list of the partitions in this disk.
+  <li>Run <code class="language-plaintext highlighter-rouge">list volume</code> to get the list of the partitions in this disk.
 <img src="/assets/bootloader-02.jpg" alt="" /></li>
-  <li>Find the letter corresponding to the volume with the existing Windows filesystem (in my case it is <code class="highlighter-rouge">C</code> since <code class="highlighter-rouge">Volume 0</code> is listed as my Windows filesystem).</li>
-  <li>Exit DiskPart by running <code class="highlighter-rouge">exit</code>.</li>
-  <li>Run <code class="highlighter-rouge">bcdboot X:\Windows</code> where <code class="highlighter-rouge">X</code> is the letter found in the previous step. This command should copy the boot files from the Windows partition to our existing EFI system partition so that an entry will be created by <code class="highlighter-rouge">systemd-boot</code>.
+  <li>Find the letter corresponding to the volume with the existing Windows filesystem (in my case it is <code class="language-plaintext highlighter-rouge">C</code> since <code class="language-plaintext highlighter-rouge">Volume 0</code> is listed as my Windows filesystem).</li>
+  <li>Exit DiskPart by running <code class="language-plaintext highlighter-rouge">exit</code>.</li>
+  <li>Run <code class="language-plaintext highlighter-rouge">bcdboot X:\Windows</code> where <code class="language-plaintext highlighter-rouge">X</code> is the letter found in the previous step. This command should copy the boot files from the Windows partition to our existing EFI system partition so that an entry will be created by <code class="language-plaintext highlighter-rouge">systemd-boot</code>.
 <img src="/assets/bootloader-03.jpg" alt="" /></li>
 </ul>
 
-<p>I then restarted and went back to the BIOS to change the default boot device back to <code class="highlighter-rouge">Linux Boot Loader</code>.</p>
+<p>I then restarted and went back to the BIOS to change the default boot device back to <code class="language-plaintext highlighter-rouge">Linux Boot Loader</code>.</p>
 
 <p><img src="/assets/bootloader-04.jpg" alt="" /></p>
 
-<p>An new entry called <code class="highlighter-rouge">Windows Boot Manager</code> has been created right below my <code class="highlighter-rouge">Arch Linux</code> entry and I now have an operational dual boot ! :D</p>
+<p>An new entry called <code class="language-plaintext highlighter-rouge">Windows Boot Manager</code> has been created right below my <code class="language-plaintext highlighter-rouge">Arch Linux</code> entry and I now have an operational dual boot ! :D</p>
 
 </div>
 
