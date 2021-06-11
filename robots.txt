@@ -1,1 +1,5 @@
+User-agent: *
+
+Disallow: /norobots/
+
 Sitemap: https://meroupatate.github.io/sitemap.xml
